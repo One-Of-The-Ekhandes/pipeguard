@@ -1,0 +1,16 @@
+// Example pipeline using the PipeGuard shared library step.
+@Library('pipeguard@v0.1.0') _
+
+pipeline {
+    agent { label 'linux' }
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+    }
+    stages {
+        stage('Pipeline security scan') {
+            steps {
+                pipeguardScan(path: '.', failOn: 'high')
+            }
+        }
+    }
+}
