@@ -1,0 +1,23 @@
+pipeline {
+  agent any
+  environment {
+    NEXUS_PASSWORD = 'Nexus#2024!'
+  }
+  parameters { string(name: 'TARGET', defaultValue: 'staging') }
+  stages {
+    stage('Build') {
+      agent { docker { image 'maven:latest'; args '-v /var/run/docker.sock:/var/run/docker.sock' } }
+      steps {
+        withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
+          sh "mvn verify sonar:sonar -Dsonar.token=${SONAR_TOKEN}"
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        input message: 'Deploy?'
+        sh "./deploy.sh ${params.TARGET}"
+      }
+    }
+  }
+}

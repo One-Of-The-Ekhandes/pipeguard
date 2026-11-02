@@ -1,0 +1,26 @@
+pipeline {
+  agent { label 'linux-build' }
+  options { timeout(time: 30, unit: 'MINUTES') }
+  environment {
+    NEXUS = credentials('nexus')
+  }
+  parameters { choice(name: 'TARGET', choices: ['staging', 'production']) }
+  stages {
+    stage('Build') {
+      agent { docker { image 'maven:3.9.9-eclipse-temurin-21' } }
+      steps {
+        withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
+          sh 'mvn verify sonar:sonar -Dsonar.token="$SONAR_TOKEN"'
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        input message: 'Deploy?', submitter: 'release-managers'
+        withEnv(["TARGET=${params.TARGET}"]) {
+          sh './deploy.sh "$TARGET"'
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+name: PR checks
+on: pull_request_target
+permissions: write-all
+jobs:
+  build:
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Greet
+        run: echo "Thanks for ${{ github.event.pull_request.title }}"
+      - run: curl -sSL https://get.example-tool.dev/install.sh | bash
+      - run: echo "token is ${{ secrets.NPM_TOKEN }}"

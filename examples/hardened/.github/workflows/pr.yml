@@ -1,0 +1,20 @@
+name: PR checks
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Greet
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: echo "Thanks for $PR_TITLE"
+      - name: Install tool with checksum
+        run: |
+          curl -sSLo install.sh https://get.example-tool.dev/install.sh
+          echo "3f5c...  install.sh" | sha256sum -c -
+          bash install.sh
