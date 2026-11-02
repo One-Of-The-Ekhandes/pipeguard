@@ -29,3 +29,10 @@ def test_severity_parse():
 def test_score_and_grade():
     assert score([]) == 100 and grade(100) == "A"
     assert grade(59) == "D" and grade(10) == "F"
+
+
+def test_code_files_named_like_pipelines_are_not_pipelines():
+    assert classify("pipeguard/rules/dockerfile.py") == "other"
+    assert classify("docs/jenkinsfile.md") == "other"
+    assert classify("Jenkinsfile.example") == "jenkins"
+    assert classify(".github/workflows/release.yaml") == "github_actions"

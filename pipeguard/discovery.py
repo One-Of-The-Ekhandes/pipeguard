@@ -11,9 +11,16 @@ SKIP_DIRS = {".git", ".venv", "venv", "node_modules", ".terraform", "__pycache__
 MAX_BYTES = 1_000_000
 
 
+# Files named like "dockerfile.py" or "jenkinsfile.md" are code or docs, not pipeline definitions.
+NOT_PIPELINE_EXT = {".py", ".pyc", ".md", ".txt", ".json", ".yml", ".yaml", ".sh", ".js", ".ts", ".go", ".java",
+                    ".html", ".rst", ".toml", ".cfg", ".ini", ".lock", ".sarif"}
+
+
 def classify(rel_path: str) -> str:
     p = PurePosixPath(rel_path)
     name = p.name.lower()
+    if p.suffix.lower() in NOT_PIPELINE_EXT and not (len(p.parts) >= 3 and p.parts[-3:-1] == (".github", "workflows")):
+        return "other"
     parts = [x.lower() for x in p.parts]
     if p.suffix.lower() in (".yml", ".yaml") and len(parts) >= 3 and parts[-3:-1] == [".github", "workflows"]:
         return "github_actions"

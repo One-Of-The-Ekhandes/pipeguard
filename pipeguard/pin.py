@@ -60,9 +60,10 @@ def pin_text(text: str, resolve: Resolver) -> tuple[str, list[str]]:
 
 
 def pin_repo(root: str | Path, resolve: Resolver, dry_run: bool = False) -> dict[str, list[str]]:
+    from .config import load
     root = Path(root)
     report: dict[str, list[str]] = {}
-    for src in discover(root):
+    for src in discover(root, exclude=load(root).exclude):
         if src.kind != "github_actions":
             continue
         new_text, changes = pin_text(src.text, resolve)

@@ -32,3 +32,11 @@ def test_pin_repo_fixes_the_finding(tmp_path):
     assert pin_repo(tmp_path, fake, dry_run=True) and "@v4" in (wf / "ci.yml").read_text()
     pin_repo(tmp_path, fake)
     assert scan(tmp_path).findings == []
+
+
+def test_pin_respects_config_exclude(tmp_path):
+    wf = tmp_path / "examples" / ".github" / "workflows"
+    wf.mkdir(parents=True)
+    (wf / "x.yml").write_text("jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n")
+    (tmp_path / ".pipeguard.yml").write_text("exclude: ['examples/**']\n")
+    assert pin_repo(tmp_path, fake) == {}
