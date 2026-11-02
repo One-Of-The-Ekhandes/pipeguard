@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pipeguard"
+version = "0.1.0"
+description = "Security scanner for CI/CD pipelines and infrastructure code: Jenkinsfile, GitHub Actions, Dockerfile, Terraform"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Rujuta Ekhande"}]
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+pipeguard = "pipeguard.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["pipeguard*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
