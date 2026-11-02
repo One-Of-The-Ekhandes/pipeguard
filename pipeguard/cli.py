@@ -49,6 +49,24 @@ def _cmd_scan(args) -> int:
     return 1 if any(f.severity >= fail_on for f in result.findings) else 0
 
 
+def _cmd_pin(args) -> int:
+    from .pin import github_resolver, pin_repo
+    try:
+        report = pin_repo(args.path, github_resolver(), dry_run=args.dry_run)
+    except RuntimeError as exc:
+        print(f"pipeguard: error: {exc}", file=sys.stderr)
+        return 2
+    if not report:
+        print("All actions are already pinned to commit SHAs.")
+    for path, changes in report.items():
+        print(path)
+        for c in changes:
+            print(f"  {c}")
+    if report and args.dry_run:
+        print("(dry run: no files changed)")
+    return 0
+
+
 def _cmd_rules(args) -> int:
     for r in sorted(RULES.values(), key=lambda r: r.id):
         print(f"{r.id:<12} {str(r.severity):<9} {r.target:<15} {r.title}")
@@ -70,6 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--github-summary", action="store_true", help="append a Markdown report to $GITHUB_STEP_SUMMARY")
     s.add_argument("--no-color", action="store_true")
     s.set_defaults(func=_cmd_scan)
+
+    p = sub.add_parser("pin", help="pin GitHub Actions to full commit SHAs (fixes PG-GHA-001)")
+    p.add_argument("path", nargs="?", default=".")
+    p.add_argument("--dry-run", action="store_true", help="show changes without writing files")
+    p.set_defaults(func=_cmd_pin)
 
     r = sub.add_parser("rules", help="list all rules")
     r.set_defaults(func=_cmd_rules)
