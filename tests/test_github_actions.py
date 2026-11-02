@@ -37,7 +37,7 @@ jobs:
 """
     fs = [f for f in findings("github_actions", wf) if f.rule.id == "PG-GHA-001"]
     assert [f.line for f in fs] == [7, 8, 12]
-    assert "main" in fs[0].message
+    assert "main" in fs[2].message
 
 
 def test_pwn_request_is_critical():
