@@ -1,0 +1,5 @@
+# PipeGuard's own settings when it scans this repository.
+fail_on: medium
+exclude:
+  - "examples/**"   # deliberately vulnerable demo files
+  - "tests/**"      # test fixtures contain insecure snippets on purpose
