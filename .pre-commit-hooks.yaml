@@ -1,0 +1,7 @@
+- id: pipeguard
+  name: PipeGuard
+  description: Scan CI/CD pipelines and infrastructure code for security issues
+  entry: pipeguard scan
+  language: python
+  pass_filenames: false
+  always_run: true
